@@ -1,5 +1,6 @@
-package com.test.client
+package com.test.client.config
 
+import com.test.client.handler.ClientWebSocketHandler
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.boot.ApplicationArguments

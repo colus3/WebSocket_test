@@ -1,4 +1,4 @@
-package com.test.client
+package com.test.client.handler
 
 import com.test.common.MessageType.*
 import com.test.common.WebSocketMessage
@@ -34,19 +34,19 @@ class ClientWebSocketHandler : TextWebSocketHandler() {
         }
     }
 
-    private fun processServerPing(session: WebSocketSession) {
+    private fun processWelcome(session: WebSocketSession) {
         val response = WebSocketMessage(
-            type = SERVER_PING_RESPONSE,
-            content = "Pong.",
+            type = WELCOME_RESPONSE,
+            content = "Thank you!",
         )
         session.sendMessage(TextMessage(response.toJson()))
         log.info("Sent [${response.type}] to server")
     }
 
-    private fun processWelcome(session: WebSocketSession) {
+    private fun processServerPing(session: WebSocketSession) {
         val response = WebSocketMessage(
-            type = WELCOME_RESPONSE,
-            content = "Thank you!",
+            type = SERVER_PING_RESPONSE,
+            content = "Pong.",
         )
         session.sendMessage(TextMessage(response.toJson()))
         log.info("Sent [${response.type}] to server")

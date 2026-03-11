@@ -1,5 +1,6 @@
-package com.test.server
+package com.test.server.config
 
+import com.test.server.handler.ServerWebSocketHandler
 import org.springframework.context.annotation.Configuration
 import org.springframework.web.socket.config.annotation.EnableWebSocket
 import org.springframework.web.socket.config.annotation.WebSocketConfigurer

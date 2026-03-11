@@ -1,4 +1,4 @@
-package com.test.server
+package com.test.server.handler
 
 import com.test.common.MessageType
 import com.test.common.WebSocketMessage

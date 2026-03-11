@@ -1,4 +1,4 @@
-package com.test.client
+package com.test.client.config
 
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
