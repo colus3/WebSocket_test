@@ -18,22 +18,26 @@ Server와 Client가 각각 독립적인 모듈로 구성되어 있으며, 주기
 
 ```
 WebSocket_test/
-├── common/                         # 공통 모듈 (메시지 타입 정의)
+├── common/                             # 공통 모듈 (메시지 타입 정의)
 │   └── src/main/kotlin/com/test/common/
-│       └── WebSocketMessage.kt     # MessageType enum, WebSocketMessage data class
+│       └── WebSocketMessage.kt         # MessageType enum, WebSocketMessage data class
 │
-├── server/                         # WebSocket 서버 (port: 8080)
+├── server/                             # WebSocket 서버 (port: 8080)
 │   └── src/main/kotlin/com/test/server/
 │       ├── ServerApplication.kt
-│       ├── WebSocketConfig.kt      # WebSocket 엔드포인트 설정 (/ws)
-│       └── ServerWebSocketHandler.kt
+│       ├── config/
+│       │   └── WebSocketConfig.kt      # WebSocket 엔드포인트 설정 (/ws)
+│       └── handler/
+│           └── ServerWebSocketHandler.kt
 │
-└── client/                         # WebSocket 클라이언트 (port: 8081)
+└── client/                             # WebSocket 클라이언트 (port: 8081)
     └── src/main/kotlin/com/test/client/
         ├── ClientApplication.kt
-        ├── WebSocketClientConfig.kt    # StandardWebSocketClient Bean
-        ├── WebSocketConnectionRunner.kt # 앱 시작 시 서버 자동 연결
-        └── ClientWebSocketHandler.kt
+        ├── config/
+        │   ├── WebSocketClientConfig.kt    # StandardWebSocketClient Bean
+        │   └── WebSocketConnectionRunner.kt # 앱 시작 시 서버 자동 연결
+        └── handler/
+            └── ClientWebSocketHandler.kt
 ```
 
 ---
