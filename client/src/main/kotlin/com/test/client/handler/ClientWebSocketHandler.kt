@@ -3,6 +3,7 @@ package com.test.client.handler
 import com.test.common.MessageType.*
 import com.test.common.WebSocketMessage
 import org.slf4j.LoggerFactory
+import org.springframework.beans.factory.annotation.Value
 import org.springframework.scheduling.annotation.Scheduled
 import org.springframework.stereotype.Component
 import org.springframework.web.socket.CloseStatus
@@ -11,7 +12,9 @@ import org.springframework.web.socket.WebSocketSession
 import org.springframework.web.socket.handler.TextWebSocketHandler
 
 @Component
-class ClientWebSocketHandler : TextWebSocketHandler() {
+class ClientWebSocketHandler(
+    @Value("\${client.id}") val clientId: String,
+) : TextWebSocketHandler() {
 
     private val log = LoggerFactory.getLogger(javaClass)
 
@@ -20,16 +23,17 @@ class ClientWebSocketHandler : TextWebSocketHandler() {
 
     override fun afterConnectionEstablished(session: WebSocketSession) {
         this.session = session
-        log.info("Connected to server: ${session.id}")
+        log.info("Connected to server as '$clientId': ${session.id}")
     }
 
     override fun handleTextMessage(session: WebSocketSession, message: TextMessage) {
         val received = WebSocketMessage.fromJson(message.payload)
-        log.info("Received [${received.type}] from server: ${received.content}")
+        log.info("<<< [${received.type}] from server: ${received.content}")
 
         when (received.type) {
             WELCOME -> processWelcome(session)
             SERVER_PING -> processServerPing(session)
+            CHAT -> println("[CHAT] ${received.senderId}: ${received.content}")
             else -> Unit
         }
     }
@@ -40,7 +44,7 @@ class ClientWebSocketHandler : TextWebSocketHandler() {
             content = "Thank you!",
         )
         session.sendMessage(TextMessage(response.toJson()))
-        log.info("Sent [${response.type}] to server")
+        log.info(">>> [${response.type}] to server")
     }
 
     private fun processServerPing(session: WebSocketSession) {
@@ -49,7 +53,19 @@ class ClientWebSocketHandler : TextWebSocketHandler() {
             content = "Pong.",
         )
         session.sendMessage(TextMessage(response.toJson()))
-        log.info("Sent [${response.type}] to server")
+        log.info(">>> [${response.type}] to server")
+    }
+
+    fun sendChat(text: String) {
+        val currentSession = session ?: return
+        if (!currentSession.isOpen) return
+        val message = WebSocketMessage(
+            type = CHAT,
+            content = text,
+            senderId = clientId,
+        )
+        currentSession.sendMessage(TextMessage(message.toJson()))
+        log.info(">>> [CHAT] to server: $text")
     }
 
     override fun afterConnectionClosed(session: WebSocketSession, status: CloseStatus) {
@@ -66,6 +82,6 @@ class ClientWebSocketHandler : TextWebSocketHandler() {
             content = "Client ping.",
         )
         currentSession.sendMessage(TextMessage(message.toJson()))
-        log.info("Sent [${message.type}] to server")
+        log.info(">>> [${message.type}] to server")
     }
 }

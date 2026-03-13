@@ -8,3 +8,6 @@ server:
 websocket:
   server:
     url: ws://localhost:8080/ws
+
+client:
+  id: default-client

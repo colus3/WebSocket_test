@@ -11,11 +11,13 @@ enum class MessageType {
     SERVER_PING_RESPONSE,
     CLIENT_PING,
     CLIENT_PING_RESPONSE,
+    CHAT,
 }
 
 data class WebSocketMessage(
     val type: MessageType,
     val content: String,
+    val senderId: String? = null,
     val timestamp: LocalDateTime = LocalDateTime.now(),
 ) {
     companion object {

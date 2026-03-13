@@ -26,12 +26,12 @@ class ServerWebSocketHandler : TextWebSocketHandler() {
             content = "Welcome! You are connected to the server.",
         )
         session.sendMessage(TextMessage(message.toJson()))
-        log.info("Sent [${message.type}] to client [${session.id}]")
+        log.info(">>> [${message.type}] to client [${session.id}]")
     }
 
     override fun handleTextMessage(session: WebSocketSession, message: TextMessage) {
         val received = WebSocketMessage.fromJson(message.payload)
-        log.info("Received [${received.type}] from client [${session.id}]: ${received.content}")
+        log.info("<<< [${received.type}] from client [${session.id}]: ${received.content}")
 
         when (received.type) {
             MessageType.CLIENT_PING -> {
@@ -40,7 +40,21 @@ class ServerWebSocketHandler : TextWebSocketHandler() {
                     content = "Received your ping.",
                 )
                 session.sendMessage(TextMessage(response.toJson()))
-                log.info("Sent [${response.type}] to client [${session.id}]")
+                log.info(">>> [${response.type}] to client [${session.id}]")
+            }
+            MessageType.CHAT -> {
+                val senderId = received.senderId ?: "unknown"
+                val broadcast = WebSocketMessage(
+                    type = MessageType.CHAT,
+                    content = received.content,
+                    senderId = senderId,
+                )
+                sessions.values.forEach { s ->
+                    if (s.isOpen) {
+                        s.sendMessage(TextMessage(broadcast.toJson()))
+                    }
+                }
+                log.info(">>> [CHAT] broadcast from [$senderId] to ${sessions.size} client(s)")
             }
             else -> Unit
         }
@@ -61,7 +75,7 @@ class ServerWebSocketHandler : TextWebSocketHandler() {
         sessions.values.forEach { session ->
             if (session.isOpen) {
                 session.sendMessage(TextMessage(message.toJson()))
-                log.info("Sent [${message.type}] to client [${session.id}]")
+                log.info(">>> [${message.type}] to client [${session.id}]")
             }
         }
     }
